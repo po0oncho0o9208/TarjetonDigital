@@ -3,8 +3,10 @@ package com.games.user.tarjetondigital;
 import android.*;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,7 +22,10 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
@@ -66,10 +71,37 @@ public class MainActivity extends AppCompatActivity {
         alert11.show();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        createSimpleDialog();
+
+        SharedPreferences sharedPref;
+        sharedPref = getSharedPreferences("inicio", Context.MODE_PRIVATE);
+        if (!sharedPref.getBoolean("inicio", false)) {
+            final android.support.v7.app.AlertDialog.Builder constructor = new android.support.v7.app.AlertDialog.Builder(this);
+            View vista = getLayoutInflater().inflate(R.layout.alert_dialog_inicio, null);
+            constructor.setView(vista);
+            final android.support.v7.app.AlertDialog dialogo = constructor.create();
+            Button botonok = vista.findViewById(R.id.botonok);
+            final CheckBox chbx = vista.findViewById(R.id.chbxdialog);
+            TextView texto = vista.findViewById(R.id.txt);
+            texto.setText(getString(R.string.mensajeinicio));
+            botonok.setOnClickListener(new View.OnClickListener() {
+                                           @Override
+                                           public void onClick(View v) {
+                                               SharedPreferences sharedPref;
+                                               sharedPref = getSharedPreferences(
+                                                       "inicio", Context.MODE_PRIVATE);
+                                               SharedPreferences.Editor editor = sharedPref.edit();
+                                               editor.putBoolean("inicio", chbx.isChecked());
+                                               editor.commit();
+                                               dialogo.cancel();
+                                           }
+                                       }
+            );
+            dialogo.show();
+        }
 
         setContentView(R.layout.activity_main);
         mAdView = findViewById(R.id.adView1);
@@ -82,41 +114,43 @@ public class MainActivity extends AppCompatActivity {
         mInterstitialAd.loadAd(adRequest1);
 
     }
-    public void calendario (View view){
 
-        Intent intent11=new Intent(this,Calendario.class);
+    public void calendario(View view) {
+
+        Intent intent11 = new Intent(this, Calendario.class);
         startActivity(intent11);
     }
 
-    public void activos (View view) {
+    public void activos(View view) {
 
-            Intent intent1 = new Intent(Intent.ACTION_VIEW, Uri.parse("http://rh.imss.gob.mx/tarjetondigital/"));
-            startActivity(intent1);
-        }
+        Intent intent1 = new Intent(Intent.ACTION_VIEW, Uri.parse("http://rh.imss.gob.mx/tarjetondigital/"));
+        startActivity(intent1);
+    }
 
-    public  void jubilados (View view){
+    public void jubilados(View view) {
 
         Intent intentae = new Intent(Intent.ACTION_VIEW, Uri.parse("http://rh.imss.gob.mx/tarjetonjubilados/(S(afzkevxvymx14vcajnskmjbf))/default.aspx"));
         startActivity(intentae);
     }
-        public void Compartir (View view) {
 
-            if (ContextCompat.checkSelfPermission(MainActivity.this,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                } else {
+    public void Compartir(View view) {
 
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-                }
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            } else {
+
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
             }
-            if (confirmacion = true) {
+        }
+        if (confirmacion = true) {
 
 
-                Intent intento = new Intent(Intent.ACTION_SEND);
+            Intent intento = new Intent(Intent.ACTION_SEND);
             intento.setType("*/*");
             String paramString1 = Integer.toString(R.drawable.logos);
             Bitmap topo2 = BitmapFactory.decodeResource(getResources(), R.drawable.logos);
@@ -135,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
             } finally {
                 if (fileOutputStream != null) {
                     Uri bmpUri = Uri.parse(file.getPath());
-                    intento.putExtra(Intent.EXTRA_TEXT, "En esta aplicación podrás descargar tu tarjetón digital, veras sus promociones"  + Html.fromHtml("<br />") +
+                    intento.putExtra(Intent.EXTRA_TEXT, "En esta aplicación podrás descargar tu tarjetón digital, veras sus promociones" + Html.fromHtml("<br />") +
                             "y recibirás notificaciones de cuando llegue el tarjetón , así como noticias relevantes del IMSS  " + Html.fromHtml("<br />") +
                             "https://play.google.com/store/apps/details?id=com.tarjetonimss.user.imsswebtarjeton");
                     intento.putExtra(
@@ -145,28 +179,27 @@ public class MainActivity extends AppCompatActivity {
                             "Siguenos en nuestra pagina "));
                 }
             }
+        } else {
+            Toast.makeText(MainActivity.this, "Gracias, bonito día", Toast.LENGTH_SHORT).show();
         }
-            else
-            {		 Toast.makeText(MainActivity.this, "Gracias, bonito día", Toast.LENGTH_SHORT).show();
-            }
-        }
+    }
 
 
-    public void documentos (View view){
-        Intent intent121=new Intent(this,Documentos.class);
+    public void documentos(View view) {
+        Intent intent121 = new Intent(this, Documentos.class);
         startActivity(intent121);
 
     }
 
-    public void noti (View view){
+    public void noti(View view) {
 
-        Intent intent08=new Intent(this,Noticias.class);
+        Intent intent08 = new Intent(this, Noticias.class);
         startActivity(intent08);
     }
 
-    public void promociones (View view){
+    public void promociones(View view) {
 
-        Intent intent1281=new Intent(this,Promociones.class);
+        Intent intent1281 = new Intent(this, Promociones.class);
         startActivity(intent1281);
     }
 
