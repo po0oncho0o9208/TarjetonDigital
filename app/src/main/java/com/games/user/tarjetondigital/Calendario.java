@@ -27,6 +27,7 @@ public class Calendario extends AppCompatActivity {
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-1984616735532779/9679963023");
         AdRequest adRequest1 = new AdRequest.Builder().build();
+
         mInterstitialAd.loadAd(adRequest1);
         mInterstitialAd.setAdListener(new AdListener(){
             @Override
